@@ -2,6 +2,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Camera, Headphones, Lightbulb, Music2, ShieldCheck, Video } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import { apiRequest } from "@/lib/api";
 import StudioCard from "@/components/StudioCard";
 import Loading from "@/components/Loading";
@@ -14,26 +18,25 @@ const categories = [
   { name: "Workshop", icon: Lightbulb, text: "Create by hand" }
 ];
 
+const slides = [
+  { title: "Make room for your next big idea.", text: "From quiet podcast rooms to full-scale production stages, find a space that brings your vision to life.", image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1800" },
+  { title: "Find a space. Create a story.", text: "Explore inspiring studios hosted by people who care about your craft.", image: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1800" },
+  { title: "Your studio could be someone’s next masterpiece.", text: "Share your creative space with a community of makers and independent creators.", image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1800" }
+];
+
 export default function HomePage() {
   const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [slide, setSlide] = useState(0);
   useEffect(() => {
     apiRequest("/api/studios?limit=6").then(setStudios).catch(() => setStudios([])).finally(() => setLoading(false));
-    const timer = setInterval(() => setSlide((old) => (old + 1) % 3), 5000);
-    return () => clearInterval(timer);
   }, []);
-  const slides = [
-    ["Make room for your next big idea.", "From quiet podcast rooms to full-scale production stages, find a space that brings your vision to life."],
-    ["Find a space. Create a story.", "Explore inspiring studios hosted by people who care about your craft."],
-    ["Your studio could be someone’s next masterpiece.", "Share your creative space with a community of makers and independent creators."]
-  ];
   return <>
-    <section className="hero"><div className="container"><div className="hero-panel"><div className="hero-content">
-      <span className="eyebrow">A creative space for every idea</span><h1>{slides[slide][0]}</h1><p>{slides[slide][1]}</p>
-      <div className="hero-buttons"><Link className="button button-primary" href="/studios">Explore studios <ArrowRight size={17}/></Link><Link className="button button-ghost" href="/add-studio">Host your space</Link></div>
-      <div className="hero-pagination">{slides.map((_, i) => <button key={i} onClick={() => setSlide(i)} aria-label={`Show slide ${i+1}`} style={{width:slide===i?34:18,background:slide===i?"#fff":"#ffffff80",height:4,border:0,borderRadius:8}}/>)}</div>
-    </div></div></div></section>
+    <section className="hero"><div className="container"><Swiper modules={[Autoplay, Pagination]} autoplay={{ delay: 4500, disableOnInteraction: false }} pagination={{ clickable: true }} loop className="hero-swiper">
+      {slides.map((slide) => <SwiperSlide key={slide.title}><div className="hero-panel" style={{ backgroundImage: `linear-gradient(90deg,rgba(13,23,17,.86),rgba(13,23,17,.2)),url(${slide.image})` }}><div className="hero-content">
+        <span className="eyebrow">A creative space for every idea</span><h1>{slide.title}</h1><p>{slide.text}</p>
+        <div className="hero-buttons"><Link className="button button-primary" href="/studios">Explore studios <ArrowRight size={17}/></Link><Link className="button button-ghost" href="/add-studio">Host your space</Link></div>
+      </div></div></SwiperSlide>)}
+    </Swiper></div></section>
     <section className="section"><div className="container"><div className="section-heading"><div><span className="eyebrow">Handpicked for you</span><h2>Featured creative spaces</h2><p>Spaces that help good ideas become great work.</p></div><Link className="text-link" href="/studios">Explore all studios ↗</Link></div>
       {loading ? <Loading/> : studios.length ? <div className="studio-grid">{studios.slice(0,6).map((studio) => <StudioCard key={studio._id} studio={studio}/>)}</div> : <div className="empty-state"><h3>New spaces are on the way</h3><p>Be the first host to list a creative studio.</p><Link href="/add-studio" className="button button-primary">List your studio</Link></div>}
     </div></section>
