@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { apiRequest } from "@/lib/api";
 import StudioCard from "@/components/StudioCard";
@@ -8,12 +7,14 @@ import Loading from "@/components/Loading";
 
 const categories = ["All","Photo Studio","Film Stage","Podcast Lounge","Music Suite","Workshop","Sound Stage"];
 export default function StudiosPage() {
-  const params = useSearchParams();
-  const [category,setCategory] = useState(params.get("category") || "All");
+  const [category,setCategory] = useState("All");
   const [search,setSearch] = useState("");
   const [studios,setStudios] = useState([]);
   const [loading,setLoading] = useState(true);
-  useEffect(() => { setCategory(params.get("category") || "All"); },[params]);
+  useEffect(() => {
+    const initialCategory = new URLSearchParams(window.location.search).get("category") || "All";
+    setCategory(initialCategory);
+  }, []);
   useEffect(() => {
     setLoading(true);
     const query = new URLSearchParams();
