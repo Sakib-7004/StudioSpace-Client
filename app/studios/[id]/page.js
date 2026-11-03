@@ -22,7 +22,7 @@ export default function StudioDetailsPage() {
     if(!session?.user) return toast.error("Please log in before booking a studio.");
     setSaving(true);
     try {
-      await apiRequest("/api/bookings",{method:"POST",body:JSON.stringify({studioId:id,startAt,endAt})});
+      await apiRequest("/api/bookings",{method:"POST",body:JSON.stringify({studioId:id,startAt:new Date(startAt).toISOString(),endAt:new Date(endAt).toISOString()})});
       toast.success("Booking request sent. You can track it in My Bookings.");
       setBookingOpen(false);
     } catch(e){toast.error(e.message);}
