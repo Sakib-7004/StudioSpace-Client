@@ -5,7 +5,7 @@ import { Camera, ChevronDown, Menu, Moon, Sun, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { apiRequest } from "@/lib/api";
 import { useTheme } from "./ThemeProvider";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 
 export default function Navbar() {
@@ -14,6 +14,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const user = session?.user;
 
   async function logout() {
@@ -30,7 +31,7 @@ export default function Navbar() {
     <div className="container nav-wrap">
       <Link href="/" className="brand"><span className="brand-mark"><Camera size={22}/></span><span>Studio<span className="brand-accent">Space</span></span></Link>
       <nav className={`nav-links ${menuOpen ? "nav-open" : ""}`}>
-        {links.map(([label, href]) => <Link key={label} href={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}
+        {links.map(([label, href]) => <Link key={label} className={pathname === href ? "active" : ""} href={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}
       </nav>
       <div className="nav-actions">
         <button className="icon-button" onClick={toggleTheme} aria-label="Toggle theme">{theme === "light" ? <Moon size={18}/> : <Sun size={18}/>}</button>
